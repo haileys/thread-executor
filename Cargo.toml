@@ -1,0 +1,8 @@
+[package]
+name = "thread-executor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pin-utils = "0.1.0"
+static_assertions = "1.1.0"
