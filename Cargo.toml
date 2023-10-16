@@ -2,6 +2,8 @@
 name = "thread-executor"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "Lightweight futures executor using std::thread::park"
 
 [dependencies]
 pin-utils = "0.1.0"
