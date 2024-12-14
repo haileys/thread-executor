@@ -1,10 +1,10 @@
 [package]
 name = "thread-executor"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
 description = "Lightweight futures executor using std::thread::park"
 
 [dependencies]
-pin-utils = "0.1.0"
-static_assertions = "1.1.0"
+pin-utils = "0.1"
+static_assertions = "1.1"
