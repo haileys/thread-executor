@@ -21,7 +21,7 @@ pub fn block_on<Fut: Future>(fut: Fut) -> Fut::Output {
 mod waker {
     use std::task::{RawWakerVTable, RawWaker, Waker};
     use std::thread::Thread;
-    use super::thread;
+    use super::thread::{self, ThreadRef};
 
     static VTABLE: RawWakerVTable = RawWakerVTable::new(
         clone,
@@ -31,10 +31,11 @@ mod waker {
     );
 
     pub fn new(thread: Thread) -> Waker {
+        let thread = ThreadRef::new(thread);
         unsafe { Waker::from_raw(new_raw(thread)) }
     }
 
-    pub fn new_raw(thread: Thread) -> RawWaker {
+    pub fn new_raw(thread: ThreadRef) -> RawWaker {
         let ptr = unsafe { thread::into_ptr(thread) };
         RawWaker::new(ptr, &VTABLE)
     }
@@ -63,20 +64,23 @@ mod waker {
 /// for supported cast operations. The soundness of the transmutes is assured
 /// with static assertions.
 mod thread {
+    use std::sync::Arc;
     use std::thread::Thread;
 
-    static_assertions::assert_eq_size!(Thread, *const ());
-    static_assertions::assert_eq_align!(Thread, *const ());
+    pub type ThreadRef = Arc<Thread>;
 
-    pub unsafe fn from_ptr(ptr: *const ()) -> Thread {
+    static_assertions::assert_eq_size!(ThreadRef, *const ());
+    static_assertions::assert_eq_align!(ThreadRef, *const ());
+
+    pub unsafe fn from_ptr(ptr: *const ()) -> ThreadRef {
         std::mem::transmute(ptr)
     }
 
-    pub unsafe fn from_ptr_ref(ptr: &*const ()) -> &Thread {
+    pub unsafe fn from_ptr_ref(ptr: &*const ()) -> &ThreadRef {
         std::mem::transmute(ptr)
     }
 
-    pub unsafe fn into_ptr(thread: Thread) -> *const () {
+    pub unsafe fn into_ptr(thread: ThreadRef) -> *const () {
         std::mem::transmute(thread)
     }
 }
